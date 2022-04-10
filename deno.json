@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "lib": ["dom", "es2019"]
+    },
+    "lint": {
+        "files": {
+          "include": ["*.ts"],
+          "exclude": ["./*.js"]
+        }
+    }
+}
