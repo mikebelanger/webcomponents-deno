@@ -62,27 +62,76 @@ class CustomCanvas extends HTMLElement {
             shadow.append(canvas);
         }
     }
-    attributeChangedCallback(name, old_val, new_val) {
+    connectedCallback() {
+        let observer = new MutationObserver((mutations)=>{
+            mutations.forEach((mutation)=>{
+                if (mutation.addedNodes.length) {
+                    var context = this.getCanvasContext();
+                    mutation.addedNodes.forEach((an)=>{
+                        if (context) {
+                            context.fillStyle = "blue";
+                            context.fillRect(0, 0, 500, 1000);
+                            context.fillStyle = "black";
+                            context.fillText(an.textContent ?? "", 200, 50);
+                        }
+                    });
+                }
+            });
+        });
+        observer.observe(this, {
+            childList: true,
+            attributes: true,
+            subtree: true
+        });
+    }
+    getCanvasContext() {
         let shadow = this.shadowRoot;
+        let c = undefined;
         shadow?.childNodes.forEach((cn)=>{
             if (cn.nodeName === "CANVAS") {
-                let c = cn;
-                let context = c.getContext("2d");
-                if (context) {
-                    context.fillStyle = new_val;
-                    context.fillRect(0, 0, 500, 1000);
-                }
+                let canvas = cn;
+                c = canvas.getContext("2d");
             }
         });
+        return c;
+    }
+    attributeChangedCallback(name, old_val, new_val) {
+        let shadow = this.shadowRoot;
         if (name === "backgroundcolor") {
-            let c = shadow?.getElementById("main_canvas");
-            c?.setAttribute('backgroundColor', new_val);
-            if (c) {
-                shadow?.appendChild(c);
-            }
+            shadow?.childNodes.forEach((cn1)=>{
+                if (cn1.nodeName === "CANVAS") {
+                    let c = cn1;
+                    let context = c.getContext("2d");
+                    if (context) {
+                        context.fillStyle = new_val;
+                        context.fillRect(0, 0, 500, 1000);
+                        context.fillStyle = "black";
+                        context.font = '25px serif';
+                        this.childNodes.forEach((cn)=>{
+                            if (cn.nodeName === "DIV") {
+                                context?.fillText(cn.textContent || "NA", 50, 50);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+}
+class BasicTemplateExample extends HTMLElement {
+    constructor(){
+        super();
+        let template = document.getElementById('basic-template-example');
+        let templateContent = template?.content;
+        const shadowRoot = this.attachShadow({
+            mode: 'open'
+        });
+        if (templateContent) {
+            shadowRoot.appendChild(templateContent.cloneNode(true));
         }
     }
 }
 customElements.define('web-component', WebComponent);
 customElements.define('another-component', AnotherComponent);
 customElements.define('custom-canvas', CustomCanvas);
+customElements.define('basic-template-example', BasicTemplateExample);

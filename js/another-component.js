@@ -2,7 +2,7 @@
 // deno-lint-ignore-file
 // This code was bundled using `deno bundle` and it's not recommended to edit it manually
 
-class WebComponent extends HTMLElement {
+class AnotherComponent extends HTMLElement {
     static get observedAttributes() {
         return [
             "history"
@@ -13,7 +13,7 @@ class WebComponent extends HTMLElement {
         const shadow = this.attachShadow({
             mode: 'open'
         });
-        let elem = document.createElement("ul");
+        let elem = document.createElement("div");
         shadow.append(elem);
     }
     attributeChangedCallback(name, old_val, new_val) {
@@ -22,4 +22,4 @@ class WebComponent extends HTMLElement {
         this.shadowRoot?.append(elem);
     }
 }
-customElements.define('web-component', WebComponent);
+export { AnotherComponent as default };
