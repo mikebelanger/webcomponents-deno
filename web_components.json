@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "lib": ["dom", "es2019"]
+        "lib": ["es2020", "dom"]
     },
     "lint": {
         "files": {
