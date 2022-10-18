@@ -9,13 +9,12 @@ class AnotherComponent extends HTMLElement {
     super();
     const shadow = this.attachShadow({mode: 'open'})
 
-    let elem = document.createElement("div")
+    let elem = document.createElement('div')
     shadow.append(elem);
   }
 
   attributeChangedCallback(name: string, old_val: string, new_val: string) {
-    let elem = document.createElement("li")
-    elem.textContent = new_val;
+    let elem = document.createElement('div')
     this.shadowRoot?.append(elem)
   }
 }

@@ -2,24 +2,48 @@
 // deno-lint-ignore-file
 // This code was bundled using `deno bundle` and it's not recommended to edit it manually
 
+const tagpair = (tag_name, inner)=>{
+    return `<${tag_name}>${inner}</${tag_name}>`;
+};
+const li = (li)=>{
+    return tagpair('li', li);
+};
+const ul = (li)=>{
+    return `<ul>${li}</ul>`;
+};
 class WebComponent extends HTMLElement {
     static get observedAttributes() {
         return [
             "history"
         ];
     }
+    state;
     constructor(){
         super();
+        this.state = {
+            items: []
+        };
         const shadow = this.attachShadow({
-            mode: 'open'
+            mode: "open"
         });
-        let elem = document.createElement("ul");
-        shadow.append(elem);
+        shadow.innerHTML = ul('');
+        this.update();
+    }
+    update() {
+        this.render();
+    }
+    render() {
+        if (this.shadowRoot?.innerHTML) {
+            this.shadowRoot.innerHTML = ul(this.state.items.map((i)=>{
+                return li(i);
+            }).join(''));
+        }
     }
     attributeChangedCallback(name, old_val, new_val) {
-        let elem = document.createElement("li");
-        elem.textContent = new_val;
-        this.shadowRoot?.append(elem);
+        if (new_val) {
+            this.state.items.push(new_val);
+            this.update();
+        }
     }
 }
 class AnotherComponent extends HTMLElement {
@@ -33,12 +57,11 @@ class AnotherComponent extends HTMLElement {
         const shadow = this.attachShadow({
             mode: 'open'
         });
-        let elem = document.createElement("div");
+        let elem = document.createElement('div');
         shadow.append(elem);
     }
     attributeChangedCallback(name, old_val, new_val) {
-        let elem = document.createElement("li");
-        elem.textContent = new_val;
+        let elem = document.createElement('div');
         this.shadowRoot?.append(elem);
     }
 }
@@ -98,9 +121,9 @@ class CustomCanvas extends HTMLElement {
     attributeChangedCallback(name, old_val, new_val) {
         let shadow = this.shadowRoot;
         if (name === "backgroundcolor") {
-            shadow?.childNodes.forEach((cn1)=>{
-                if (cn1.nodeName === "CANVAS") {
-                    let c = cn1;
+            shadow?.childNodes.forEach((cn)=>{
+                if (cn.nodeName === "CANVAS") {
+                    let c = cn;
                     let context = c.getContext("2d");
                     if (context) {
                         context.fillStyle = new_val;
